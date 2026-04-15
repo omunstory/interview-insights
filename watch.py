@@ -82,16 +82,28 @@ def run_analysis():
         log(f"  분석 오류: {result.stderr[-200:]}")
         return
 
-    # 2. Firebase 배포
-    deploy = subprocess.run(
-        ["firebase", "deploy", "--only", "hosting"],
-        capture_output=True, text=True, timeout=120,
-        cwd=project_dir,
-    )
-    if deploy.returncode == 0:
-        log("  Firebase 배포 완료")
+    # 2. Firebase 배포 (설치되어 있는 경우만)
+    import shutil
+    firebase_path = shutil.which("firebase")
+    if not firebase_path:
+        # 일반적인 설치 경로도 확인
+        for path in [os.path.expanduser("~/.local/bin/firebase"), "/usr/local/bin/firebase"]:
+            if os.path.isfile(path):
+                firebase_path = path
+                break
+
+    if firebase_path:
+        deploy = subprocess.run(
+            [firebase_path, "deploy", "--only", "hosting"],
+            capture_output=True, text=True, timeout=120,
+            cwd=project_dir,
+        )
+        if deploy.returncode == 0:
+            log("  Firebase 배포 완료")
+        else:
+            log(f"  Firebase 배포 오류: {deploy.stderr[-200:]}")
     else:
-        log(f"  Firebase 배포 오류: {deploy.stderr[-200:]}")
+        log("  Firebase 미설치 — 로컬 대시보드만 업데이트됨")
 
 
 def main():
