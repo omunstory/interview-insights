@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>USP 마케팅 대시보드 — EngageRank</title>
+<style>
+:root{--p:#2b66a8;--pl:#e8f0f8;--pd:#1d4a7a;--bg:#fff;--sf:#f7f9fb;--bd:#e2e8f0;--tx:#1a202c;--mt:#64748b;--r:#dc2626;--rb:#fef2f2;--a:#d97706;--ab:#fffbeb;--g:#16a34a;--gb:#f0fdf4;--v:#7c3aed;--vb:#f5f3ff;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Pretendard','Segoe UI',sans-serif;background:var(--sf);color:var(--tx);line-height:1.6;}
+.hd{background:var(--p);color:#fff;padding:24px 0;}
+.hd-in{max-width:1200px;margin:0 auto;padding:0 24px;}
+.hd h1{font-size:21px;font-weight:700;}.hd .sub{font-size:12px;opacity:.75;margin-top:2px;}
+.nv{background:#fff;border-bottom:1px solid var(--bd);position:sticky;top:0;z-index:100;}
+.nv-in{max-width:1200px;margin:0 auto;padding:0 24px;display:flex;overflow-x:auto;}
+.tb{padding:12px 16px;font-size:12.5px;font-weight:600;color:var(--mt);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:.15s;}
+.tb:hover{color:var(--p);}.tb.on{color:var(--p);border-bottom-color:var(--p);}
+.mn{max-width:1200px;margin:0 auto;padding:20px 24px;}
+.sc{display:none;}.sc.on{display:block;}
+.cd{background:#fff;border:1px solid var(--bd);border-radius:10px;padding:18px;margin-bottom:12px;}
+.cd:hover{box-shadow:0 2px 8px rgba(0,0,0,.04);}
+.cd h3{font-size:14px;font-weight:700;margin-bottom:6px;}
+.cd p,.cd li{font-size:13px;line-height:1.7;}
+.st{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:18px;}
+.st-c{background:#fff;border:1px solid var(--bd);border-radius:10px;padding:14px;}
+.st-c .lb{font-size:10px;color:var(--mt);text-transform:uppercase;letter-spacing:.5px;}
+.st-c .vl{font-size:24px;font-weight:800;color:var(--p);margin-top:1px;}
+.st-c .dt{font-size:10px;color:var(--mt);}
+.tt{font-size:16px;font-weight:700;margin:24px 0 10px;display:flex;align-items:center;gap:8px;}
+.tt:first-child{margin-top:0;}
+.cnt{font-size:10px;color:var(--mt);background:var(--sf);padding:2px 7px;border-radius:8px;}
+.b{font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;display:inline-block;}
+.bh{background:var(--rb);color:var(--r);}.bm{background:var(--ab);color:var(--a);}.bl{background:var(--gb);color:var(--g);}
+.bs{background:var(--gb);color:var(--g);}.bp{background:var(--pl);color:var(--p);}.bv{background:var(--vb);color:var(--v);}
+.q{font-size:12.5px;font-style:italic;color:var(--pd);background:var(--pl);padding:7px 11px;border-radius:5px;margin-top:5px;border-left:3px solid var(--p);}
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px;}
+.g3{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;}
+/* ICP card */
+.icp{background:linear-gradient(135deg,var(--pl),#fff);border:2px solid var(--p);border-radius:12px;padding:22px;margin-bottom:16px;}
+.icp h2{font-size:18px;font-weight:800;color:var(--pd);margin-bottom:10px;}
+.icp .def{font-size:15px;font-weight:600;color:var(--p);padding:10px 14px;background:#fff;border-radius:8px;margin-bottom:10px;border-left:4px solid var(--p);}
+.icp .meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;}
+.icp .meta-item{font-size:12px;}.icp .meta-item strong{display:block;color:var(--mt);font-size:10px;text-transform:uppercase;}
+/* USP flow card */
+.usp-flow{background:#fff;border:2px solid var(--p);border-radius:12px;padding:20px;margin-bottom:12px;}
+.usp-flow .msg{font-size:16px;font-weight:800;color:var(--pd);margin-bottom:8px;}
+.usp-flow .flow{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0;font-size:12px;}
+.usp-flow .flow-step{padding:10px;border-radius:6px;text-align:center;}
+.usp-flow .flow-step.pain{background:var(--rb);}.usp-flow .flow-step.gap{background:var(--ab);}
+.usp-flow .flow-step.usp{background:var(--gb);}.usp-flow .flow-step.message{background:var(--pl);}
+.usp-flow .flow-step strong{display:block;font-size:10px;color:var(--mt);margin-bottom:3px;}
+.usp-flow .evidence{font-size:12px;color:var(--mt);margin-top:6px;}
+/* Matrix table */
+.mx{width:100%;border-collapse:collapse;font-size:12.5px;margin-bottom:12px;}
+.mx th{text-align:left;padding:10px;background:var(--sf);border-bottom:2px solid var(--bd);font-weight:600;color:var(--mt);font-size:11px;}
+.mx td{padding:10px;border-bottom:1px solid var(--bd);vertical-align:top;}
+.mx tr:last-child td{border-bottom:none;}
+.mx .stage{font-weight:700;white-space:nowrap;}
+/* Copy card */
+.copy-card{background:#fff;border:1px solid var(--bd);border-radius:10px;overflow:hidden;margin-bottom:10px;}
+.copy-head{padding:12px 16px;font-size:13px;font-weight:700;border-bottom:1px solid var(--bd);}
+.copy-head.aw{background:var(--rb);color:var(--r);}.copy-head.co{background:var(--ab);color:var(--a);}.copy-head.de{background:var(--gb);color:var(--g);}
+.copy-item{padding:12px 16px;border-bottom:1px solid var(--bd);font-size:13px;}
+.copy-item:last-child{border-bottom:none;}
+.copy-item .tag{font-size:10px;color:var(--mt);margin-top:2px;}
+/* Objection row */
+.obj-row{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--bd);border-radius:10px;overflow:hidden;margin-bottom:10px;}
+.obj-row .left{padding:14px 16px;background:var(--rb);border-right:1px solid var(--bd);}
+.obj-row .right{padding:14px 16px;background:var(--gb);}
+.obj-row .label{font-size:10px;font-weight:700;color:var(--mt);margin-bottom:4px;}
+.obj-row p{font-size:13px;}
+/* BA row */
+.ba-row{display:grid;grid-template-columns:1fr auto 1fr;gap:0;align-items:center;border:1px solid var(--bd);border-radius:10px;overflow:hidden;margin-bottom:10px;}
+.ba-row .before{padding:14px 16px;background:var(--rb);}
+.ba-row .arrow-col{padding:8px;font-size:20px;color:var(--p);background:#fff;}
+.ba-row .after{padding:14px 16px;background:var(--gb);}
+.ba-row .label{font-size:10px;font-weight:700;color:var(--mt);margin-bottom:4px;}
+.ba-row p{font-size:13px;}
+/* Toggle */
+.tg-h{padding:13px 16px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;}
+.tg-h:hover{background:var(--sf);}
+.tg-b{display:none;padding:0 16px 14px;border-top:1px solid var(--bd);}
+.cd.op .tg-b{display:block;}
+.ar{font-size:10px;color:var(--mt);transition:transform .15s;}.cd.op .ar{transform:rotate(90deg);}
+/* Price */
+.pr-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--bd);font-size:13px;}
+.pr-row:last-child{border-bottom:none;}
+.pr-row .amount{font-size:18px;font-weight:800;color:var(--p);min-width:80px;}
+/* Raw pain card */
+.rp-card{background:#fff;border:1px solid var(--bd);border-radius:10px;padding:18px;margin-bottom:12px;border-left:4px solid var(--r);}
+.rp-card.cat-원문{border-left-color:var(--p);}.rp-card.cat-저항{border-left-color:var(--a);}
+.rp-card .rp-point{font-size:13px;font-weight:700;margin-bottom:6px;}
+.rp-card .rp-question{font-size:12px;color:var(--mt);margin-bottom:6px;padding:6px 10px;background:var(--sf);border-radius:5px;}
+.rp-card .rp-quote{font-size:14px;line-height:1.7;margin-bottom:8px;padding:10px 14px;background:var(--pl);border-radius:6px;border-left:3px solid var(--p);}
+.rp-card .rp-emotion{font-size:11px;color:var(--r);font-weight:600;margin-bottom:6px;}
+.rp-card .rp-meta{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--mt);flex-wrap:wrap;}
+.nlink{color:var(--p);text-decoration:none;font-weight:600;font-size:11px;display:inline-flex;align-items:center;gap:3px;}
+.nlink:hover{text-decoration:underline;color:var(--pd);}
+.nlink::after{content:'↗';font-size:10px;}
+/* Filter btn */
+.fbtn{padding:5px 12px;font-size:11px;font-weight:600;border:1px solid var(--bd);border-radius:16px;cursor:pointer;background:#fff;color:var(--mt);transition:.15s;}
+.fbtn:hover,.fbtn.on{background:var(--p);color:#fff;border-color:var(--p);}
+@media(max-width:768px){.st{grid-template-columns:repeat(2,1fr);}.g2,.g3{grid-template-columns:1fr;}.usp-flow .flow{grid-template-columns:repeat(2,1fr);}.obj-row,.ba-row{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="hd"><div class="hd-in">
+  <h1>USP 마케팅 대시보드</h1>
+  <div class="sub">EngageRank / ContentCoach — 인터뷰 기반 마케팅 실행 키트</div>
+</div></div>
+<div class="nv"><div class="nv-in">
+  <div class="tb on" data-t="summary">핵심 요약</div>
+  <div class="tb" data-t="rawpain">고객 고통 원문</div>
+  <div class="tb" data-t="icp">ICP & 세그먼트</div>
+  <div class="tb" data-t="uspflow">Pain→USP→Message</div>
+  <div class="tb" data-t="copykit">카피 키트</div>
+  <div class="tb" data-t="objection">저항 & Before/After</div>
+  <div class="tb" data-t="price">가격 전략</div>
+  <div class="tb" data-t="raw">개별 인터뷰</div>
+</div></div>
+<div class="mn">
+
+<!-- 1. 핵심 요약 -->
+<div class="sc on" id="summary">
+  <div class="st" id="stats"></div>
+  <div id="icp-summary"></div>
+  <div class="tt">Primary USP</div>
+  <div id="primary-usp"></div>
+  <div class="tt">메시징 매트릭스</div>
+  <div id="matrix-summary"></div>
+</div>
+
+<!-- 고객 고통 원문 -->
+<div class="sc" id="rawpain">
+  <div class="tt">고객 고통 원문 수집 <span class="cnt">날것 그대로</span></div>
+  <div style="margin-bottom:14px;display:flex;gap:6px;flex-wrap:wrap" id="pain-filters"></div>
+  <div id="raw-pain-list"></div>
+</div>
+
+<!-- 2. ICP & 세그먼트 -->
+<div class="sc" id="icp">
+  <div class="tt">ICP (Ideal Customer Profile)</div>
+  <div id="icp-full"></div>
+  <div class="tt">세그먼트 비교</div>
+  <div id="segments"></div>
+</div>
+
+<!-- 3. Pain→USP→Message -->
+<div class="sc" id="uspflow">
+  <div class="tt">Pain → Gap → USP → Message</div>
+  <div id="usp-flows"></div>
+</div>
+
+<!-- 4. 카피 키트 -->
+<div class="sc" id="copykit">
+  <div class="tt">바로 쓸 수 있는 카피 키트</div>
+  <div class="g3" id="copy-cards"></div>
+</div>
+
+<!-- 5. 저항 & Before/After -->
+<div class="sc" id="objection">
+  <div class="tt">구매 저항 & 반박</div>
+  <div id="objections"></div>
+  <div class="tt">Before / After</div>
+  <div id="before-after"></div>
+</div>
+
+<!-- 6. 가격 전략 -->
+<div class="sc" id="price">
+  <div class="tt">가격 전략</div>
+  <div id="price-content"></div>
+</div>
+
+<!-- 7. 개별 인터뷰 -->
+<div class="sc" id="raw">
+  <div id="raw-list"></div>
+</div>
+
+</div>
+<script>
+const D=__DASHBOARD_DATA_PLACEHOLDER__;
+document.querySelectorAll('.tb').forEach(t=>{t.addEventListener('click',()=>{document.querySelectorAll('.tb').forEach(x=>x.classList.remove('on'));document.querySelectorAll('.sc').forEach(x=>x.classList.remove('on'));t.classList.add('on');document.getElementById(t.dataset.t).classList.add('on');window.scrollTo(0,0);});});
+const h=s=>s||'';
+
+// Stats
+document.getElementById('stats').innerHTML=`
+<div class="st-c"><div class="lb">총 인터뷰</div><div class="vl">${D.total}</div><div class="dt">${D.db_count}개 세그먼트</div></div>
+<div class="st-c"><div class="lb">USP 후보</div><div class="vl">${D.usps.length}</div><div class="dt">Pain+Gap 기반</div></div>
+<div class="st-c"><div class="lb">카피 소스</div><div class="vl">${D.copy_awareness.length+D.copy_consideration.length+D.copy_decision.length}</div></div>
+<div class="st-c"><div class="lb">구매 저항</div><div class="vl">${D.objections.length}</div></div>
+<div class="st-c"><div class="lb">업데이트</div><div class="vl" style="font-size:14px">${D.updated}</div></div>`;
+
+// ICP Summary
+function renderICP(el){
+  const i=D.icp;
+  el.innerHTML=`<div class="icp">
+    <h2>ICP: ${h(i.title)}</h2>
+    <div class="def">${h(i.definition)}</div>
+    <div class="meta">
+      <div class="meta-item"><strong>팔로워</strong>${h(i.followers)}</div>
+      <div class="meta-item"><strong>운영 목적</strong>${h(i.purpose)}</div>
+      <div class="meta-item"><strong>지불 이력</strong>${h(i.spend)}</div>
+      <div class="meta-item"><strong>긴급도</strong>${h(i.urgency)}</div>
+      <div class="meta-item"><strong>대표 인물</strong>${h(i.representative)}</div>
+    </div>
+  </div>`;
+}
+renderICP(document.getElementById('icp-summary'));
+renderICP(document.getElementById('icp-full'));
+
+// Segments
+document.getElementById('segments').innerHTML=`<div class="g3">${D.segments.map(s=>`
+  <div class="cd"><h3>${h(s.name)}</h3><ul style="padding-left:16px">${s.points.map(p=>`<li>${p}</li>`).join('')}</ul></div>
+`).join('')}</div>`;
+
+// Primary USP (first one)
+if(D.usps.length){
+  const u=D.usps[0];
+  document.getElementById('primary-usp').innerHTML=`<div class="usp-flow">
+    <div style="display:flex;justify-content:space-between"><div class="msg">"${h(u.message)}"</div><span class="b ${u.strength==='확실'?'bs':u.strength==='유망'?'bp':'bv'}">${h(u.strength)}</span></div>
+    <div class="flow">
+      <div class="flow-step pain"><strong>PAIN</strong>${h(u.pain)}</div>
+      <div class="flow-step gap"><strong>GAP</strong>${h(u.gap)}</div>
+      <div class="flow-step usp"><strong>USP</strong>${h(u.usp)}</div>
+      <div class="flow-step message"><strong>MESSAGE</strong>${h(u.message)}</div>
+    </div>
+    <div class="evidence">${h(u.people)} · ${h(u.strength)}</div>
+  </div>`;
+}
+
+// Matrix Summary
+document.getElementById('matrix-summary').innerHTML=`<table class="mx">
+<tr><th>퍼널</th><th>잠재고객</th><th>기존고객</th><th>핵심 고객 원문</th></tr>
+${D.matrix.map(r=>`<tr><td class="stage">${h(r.stage)}</td><td>${h(r.prospect)}</td><td>${h(r.customer)}</td><td><em>${h(r.quote)}</em></td></tr>`).join('')}
+</table>`;
+
+// USP Flows
+document.getElementById('usp-flows').innerHTML=D.usps.map((u,i)=>`
+<div class="usp-flow">
+  <div style="display:flex;justify-content:space-between;align-items:start">
+    <div class="msg">${i+1}. "${h(u.message)}"</div>
+    <span class="b ${u.strength==='확실'?'bs':u.strength==='유망'?'bp':'bv'}">${h(u.strength)}</span>
+  </div>
+  <div class="flow">
+    <div class="flow-step pain"><strong>PAIN</strong>${h(u.pain)}</div>
+    <div class="flow-step gap"><strong>GAP</strong>${h(u.gap)}</div>
+    <div class="flow-step usp"><strong>USP</strong>${h(u.usp)}</div>
+    <div class="flow-step message"><strong>MESSAGE</strong>${h(u.message)}</div>
+  </div>
+  <div class="evidence">${h(u.people)}</div>
+</div>`).join('');
+
+// Copy Kit
+const copyHtml=[
+  {items:D.copy_awareness,label:'인지 (Awareness)',cls:'aw',desc:'공감 + 문제 인식'},
+  {items:D.copy_consideration,label:'고려 (Consideration)',cls:'co',desc:'기능 가치 + 비교'},
+  {items:D.copy_decision,label:'전환 (Decision)',cls:'de',desc:'소셜프루프 + CTA'},
+].map(c=>`<div class="copy-card">
+  <div class="copy-head ${c.cls}">${c.label} <span style="font-weight:400;font-size:11px">— ${c.desc}</span></div>
+  ${c.items.map(i=>`<div class="copy-item">${h(i.text)}<div class="tag">${h(i.type)} · ${h(i.source)}</div></div>`).join('')}
+</div>`).join('');
+document.getElementById('copy-cards').innerHTML=copyHtml;
+
+// Objections
+document.getElementById('objections').innerHTML=D.objections.map(o=>`
+<div class="obj-row">
+  <div class="left"><div class="label">저항</div><p>${h(o.barrier)}</p>${o.quote?`<div class="q">${h(o.quote)}</div>`:''}</div>
+  <div class="right"><div class="label">반박</div><p>${h(o.counter)}</p>${o.counter_evidence?`<div class="q">${h(o.counter_evidence)}</div>`:''}</div>
+</div>`).join('');
+
+// Before/After
+document.getElementById('before-after').innerHTML=D.before_after.map(ba=>`
+<div class="ba-row">
+  <div class="before"><div class="label">BEFORE</div><p>${h(ba.before)}</p></div>
+  <div class="arrow-col">→</div>
+  <div class="after"><div class="label">AFTER</div><p>${h(ba.after)}</p>${ba.quote?`<div class="q">${h(ba.quote)}</div>`:''}</div>
+</div>`).join('');
+
+// Price
+document.getElementById('price-content').innerHTML=D.price_html;
+
+// Helper: Notion link
+function nlink(url, name){
+  if(!url) return `<span style="font-size:11px;color:var(--mt)">${h(name)}</span>`;
+  return `<a href="${url}" target="_blank" class="nlink">${h(name)}</a>`;
+}
+
+// Raw pain collection
+function renderRawPains(filter){
+  const items = filter==='전체' ? D.raw_pains : D.raw_pains.filter(p=>p.category===filter||p.segment===filter);
+  document.getElementById('raw-pain-list').innerHTML=items.map(p=>`
+    <div class="rp-card cat-${h(p.category)}">
+      ${p.point?`<div class="rp-point">${h(p.point)}</div>`:''}
+      ${p.emotion?`<div class="rp-emotion">${h(p.emotion)}</div>`:''}
+      ${p.question?`<div class="rp-question">Q. ${h(p.question)}</div>`:''}
+      <div class="rp-quote">${h(p.text)}</div>
+      ${p.full_context&&p.full_context!==p.text?`<div style="font-size:12px;color:var(--mt);line-height:1.6;margin-bottom:8px;padding:8px 12px;background:var(--sf);border-radius:5px">${h(p.full_context)}</div>`:''}
+      <div class="rp-meta">
+        <span class="b ${p.category==='고통'?'bh':p.category==='저항'?'bm':'bp'}">${h(p.category)}</span>
+        ${p.intensity?`<span class="b ${p.intensity==='상'?'bh':'bm'}">${h(p.intensity)}</span>`:''}
+        <span class="b bp">${h(p.segment)}</span>
+        ${nlink(p.notion_url, p.who)}
+      </div>
+    </div>
+  `).join('') || '<p style="color:var(--mt);font-size:13px">해당 필터에 맞는 원문이 없습니다.</p>';
+}
+
+// Filters
+const cats=['전체','고통','원문','저항','기존','잠재','얼리버드'];
+document.getElementById('pain-filters').innerHTML=cats.map((c,i)=>
+  `<span class="fbtn ${i===0?'on':''}" onclick="document.querySelectorAll('.fbtn').forEach(x=>x.classList.remove('on'));this.classList.add('on');renderRawPains('${c}')">${c}</span>`
+).join('');
+renderRawPains('전체');
+
+// Raw interviews
+let rHtml='';
+D.databases.forEach(db=>{
+  rHtml+=`<div class="tt">${db.name} <span class="cnt">${db.interviews.length}명</span></div>`;
+  db.interviews.forEach((iv,i)=>{
+    const id='r'+db.name+i;
+    rHtml+=`<div class="cd" id="${id}">
+      <div class="tg-h" onclick="document.getElementById('${id}').classList.toggle('op')">
+        <div><span class="b bp">${db.short}</span> <strong style="font-size:13px">${h(iv.title)}</strong>
+        ${iv.notion_url?` ${nlink(iv.notion_url,'노션에서 보기')}`:''}
+        <span style="font-size:11px;color:var(--mt);margin-left:6px">${h(iv.one_line)}</span></div>
+        <span class="ar">&#9654;</span></div>
+      <div class="tg-b">
+        ${iv.pains.length?`<div style="margin:8px 0 4px;font-size:12px;font-weight:700;color:var(--r)">Pain</div>${iv.pains.map(p=>`<div style="font-size:12px;margin-bottom:6px">• ${h(p.point)} <span class="b ${p.intensity==='상'?'bh':'bm'}">${h(p.intensity)}</span>${p.quote?`<div class="q">"${h(p.quote)}" ${p.notion_url?nlink(p.notion_url,'원문 보기'):''}</div>`:''}</div>`).join('')}`:''}
+        ${iv.values.length?`<div style="margin:8px 0 4px;font-size:12px;font-weight:700;color:var(--g)">Value</div>${iv.values.map(v=>`<div style="font-size:12px;margin-bottom:6px">• ${h(v.point)}${v.quote?`<div class="q">"${h(v.quote)}"</div>`:''}</div>`).join('')}`:''}
+        ${iv.voices.length?`<div style="margin:8px 0 4px;font-size:12px;font-weight:700;color:var(--p)">Voice</div>${iv.voices.map(v=>`<div class="q" style="margin-bottom:4px">"${h(v.text)}" ${v.notion_url?nlink(v.notion_url,'원문 보기'):''}</div>`).join('')}`:''}
+        ${iv.objections&&iv.objections.length?`<div style="margin:8px 0 4px;font-size:12px;font-weight:700;color:var(--a)">Objection</div>${iv.objections.map(o=>`<div style="font-size:12px;margin-bottom:6px">• ${h(o.barrier)}${o.quote?`<div class="q">"${h(o.quote)}" ${o.notion_url?nlink(o.notion_url,'원문 보기'):''}</div>`:''}</div>`).join('')}`:''}
+      </div></div>`;
+  });
+});
+document.getElementById('raw-list').innerHTML=rHtml;
+</script>
+</body>
+</html>

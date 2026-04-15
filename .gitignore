@@ -1,0 +1,8 @@
+config.py
+.insight_cache.json
+.last_state.json
+watch.log
+__pycache__/
+*.pyc
+.firebaserc
+index.html

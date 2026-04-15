@@ -1,0 +1,18 @@
+{
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "*.py",
+      "*.pyc",
+      ".insight_cache.json",
+      ".last_state.json",
+      "*.plist",
+      "watch.log",
+      "config.py",
+      "firebase.json",
+      ".firebaserc",
+      "__pycache__",
+      "node_modules"
+    ]
+  }
+}
