@@ -1,7 +1,7 @@
 """Claude API를 사용해 인터뷰에서 마케팅 실행용 인사이트를 추출하는 모듈"""
 import json
 import urllib.request
-from config import CLAUDE_API_KEY
+from config import CLAUDE_API_KEY, PRODUCT_NAME, PRODUCT_DESC, TARGET_CUSTOMER
 
 API_URL = "https://api.anthropic.com/v1/messages"
 
@@ -27,17 +27,15 @@ def extract_individual_insight(interview_title, interview_content, db_name):
     """개별 인터뷰에서 마케팅 실행용 인사이트 추출"""
     prompt = f"""당신은 실리콘밸리 마케팅 디렉터입니다. 랜딩페이지와 광고 카피를 바로 쓸 수 있는 인사이트를 추출합니다.
 
-제품: EngageRank(인스타그램 분석 크롬 확장프로그램) / ContentCoach(콘텐츠 코칭 서비스)
+제품: {PRODUCT_NAME} ({PRODUCT_DESC})
+타겟 고객: {TARGET_CUSTOMER}
 데이터베이스: {db_name}
 인터뷰 대상: {interview_title}
 
 ## 중요
 - 이 문서는 인터뷰 진행자가 직접 작성한 것입니다. 질문 설계, 가이드라인, 메모, 실제 답변 등 **모든 내용이 분석 대상**입니다.
 - **[답변]** 으로 시작하는 텍스트는 인터뷰이의 실제 답변입니다. 이것이 가장 중요한 데이터입니다.
-- 특히 다음 질문에 대한 답변을 집중적으로 찾으세요:
-  - Q3류: "이 콘텐츠 왜 안 됐지?" 경험 → **고객의 구체적 고통 에피소드**
-  - Q9/Q10류: 성과가 안 나올 때의 영향 → **감정적/실질적 비용**
-  - Q2류: 가장 답답한 점 → **자발적 문제 언급**
+- 고객이 겪는 구체적 고통 에피소드, 감정적/실질적 비용, 자발적 문제 언급을 집중적으로 찾으세요.
 
 ## 추출할 항목 (반드시 JSON 형식)
 
@@ -114,8 +112,9 @@ def extract_common_insights(all_individual_insights):
 
     prompt = f"""당신은 실리콘밸리 마케팅 디렉터입니다. 이 분석을 보고 팀이 **바로 랜딩페이지, 광고, 세일즈 스크립트를 만들 수 있어야** 합니다.
 
-제품: EngageRank(인스타 분석 크롬 확장)/ContentCoach(콘텐츠 코칭)
-3개 세그먼트: 기존 사용자 / 잠재고객 / 얼리버드 구매 고객
+제품: {PRODUCT_NAME} ({PRODUCT_DESC})
+타겟 고객: {TARGET_CUSTOMER}
+데이터베이스 세그먼트: {', '.join(all_individual_insights.keys())}
 
 ## 중요 컨텍스트
 - 모든 인터뷰 문서는 진행자가 직접 작성. 질문 설계도 유효한 데이터.

@@ -108,6 +108,25 @@ if not databases:
     print("  ⚠️  데이터베이스를 찾지 못했습니다. 페이지 ID를 확인해주세요.")
     sys.exit(1)
 
+# 4. 제품 정보
+print()
+print("━━━ 4/5: 제품 정보 ━━━")
+print()
+print("  분석할 제품/서비스 정보를 입력하세요.")
+print("  (인터뷰가 어떤 제품에 대한 것인지)")
+print()
+product_name = input("  제품 이름 (예: 요리 레시피 앱): ").strip()
+if not product_name:
+    product_name = "내 제품"
+product_desc = input("  제품 설명 (예: AI 기반 맞춤 레시피 추천): ").strip()
+if not product_desc:
+    product_desc = ""
+target_customer = input("  타겟 고객 (예: 요리 초보 직장인): ").strip()
+if not target_customer:
+    target_customer = ""
+
+print(f"  ✅ {product_name}")
+
 # Claude API 테스트
 print()
 print("  Claude API 테스트 중...")
@@ -184,6 +203,11 @@ DATABASES = {db_dict_str}
 
 # 인터뷰가 아닌 항목 제외
 EXCLUDE_PAGE_IDS = {exclude_str}
+
+# 제품 정보 (프롬프트에 자동 반영)
+PRODUCT_NAME = "{product_name}"
+PRODUCT_DESC = "{product_desc}"
+TARGET_CUSTOMER = "{target_customer}"
 '''
 
 config_path = os.path.join(SCRIPT_DIR, "config.py")
