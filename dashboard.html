@@ -115,6 +115,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Pretendard','Segoe UI',sans-s
   <div class="tb" data-t="uspflow">Pain→USP→Message</div>
   <div class="tb" data-t="copykit">카피 키트</div>
   <div class="tb" data-t="objection">저항 & Before/After</div>
+  <div class="tb" data-t="common">공통 발언</div>
+  <div class="tb" data-t="adcopy">광고 카피 원문</div>
+  <div class="tb" data-t="hypothesis">미검증 가설</div>
   <div class="tb" data-t="price">가격 전략</div>
   <div class="tb" data-t="raw">개별 인터뷰</div>
 </div></div>
@@ -163,6 +166,30 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Pretendard','Segoe UI',sans-s
   <div id="objections"></div>
   <div class="tt">Before / After</div>
   <div id="before-after"></div>
+</div>
+
+<!-- 공통 발언 -->
+<div class="sc" id="common">
+  <div class="tt">2명 이상 같은 말을 한 것</div>
+  <div id="common-voices"></div>
+  <div class="tt">고스트레스 고객 공통점 <span class="cnt">긴급도 7점+ / 감정 강도 상</span></div>
+  <div id="high-stress"></div>
+</div>
+
+<!-- 광고 카피 원문 -->
+<div class="sc" id="adcopy">
+  <div class="tt">페인 포인트 카피 <span class="cnt">고통/자기의심/좌절</span></div>
+  <div id="pain-copies"></div>
+  <div class="tt">와우 포인트 카피 <span class="cnt">놀라움/만족/변화</span></div>
+  <div id="wow-copies"></div>
+</div>
+
+<!-- 미검증 가설 -->
+<div class="sc" id="hypothesis">
+  <div class="tt">아직 검증 안 된 가설</div>
+  <div id="unverified"></div>
+  <div class="tt">다음 인터뷰에서 확인할 질문 3개</div>
+  <div id="next-questions"></div>
 </div>
 
 <!-- 6. 가격 전략 -->
@@ -311,6 +338,67 @@ document.getElementById('pain-filters').innerHTML=cats.map((c,i)=>
   `<span class="fbtn ${i===0?'on':''}" onclick="document.querySelectorAll('.fbtn').forEach(x=>x.classList.remove('on'));this.classList.add('on');renderRawPains('${c}')">${c}</span>`
 ).join('');
 renderRawPains('전체');
+
+// Common voices (2명 이상)
+document.getElementById('common-voices').innerHTML=(D.common_voices||[]).map(cv=>`
+  <div class="cd">
+    <h3>${h(cv.theme)}</h3>
+    ${(cv.quotes||[]).map(q=>`
+      <div style="margin:8px 0;padding:10px 14px;background:var(--pl);border-radius:6px;border-left:3px solid var(--p)">
+        <div style="font-size:14px;line-height:1.6">"${h(q.text)}"</div>
+        <div style="font-size:11px;color:var(--p);font-weight:600;margin-top:4px">${h(q.who)}</div>
+      </div>
+    `).join('')}
+  </div>
+`).join('') || '<p style="color:var(--mt)">데이터 로딩 중</p>';
+
+// High stress commonalities
+document.getElementById('high-stress').innerHTML=D.high_stress_html||'<p style="color:var(--mt)">데이터 로딩 중</p>';
+
+// Ad copy split by pain/wow
+const painCopies=(D.ad_copies||[]).filter(ac=>ac.copy_type==='페인'||ac.usage.includes('헤드라인')||ac.usage.includes('서브'));
+const wowCopies=(D.ad_copies||[]).filter(ac=>ac.copy_type==='와우'||ac.usage.includes('소셜')||ac.usage.includes('CTA'));
+// If no copy_type field, split by all
+const allCopies=D.ad_copies||[];
+const pains2=painCopies.length?painCopies:allCopies.filter((_,i)=>i<Math.ceil(allCopies.length*0.6));
+const wows2=wowCopies.length?wowCopies:allCopies.filter((_,i)=>i>=Math.ceil(allCopies.length*0.6));
+
+function renderCopyCard(ac,color){
+  return `<div class="cd" style="border-left:4px solid var(--${color})">
+    <div style="font-size:16px;font-weight:700;line-height:1.5;margin-bottom:8px">"${h(ac.text)}"</div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <span class="b ${color==='r'?'bh':color==='g'?'bl':'bp'}">${h(ac.copy_type||ac.usage)}</span>
+      <span class="b bp">${h(ac.usage)}</span>
+      <span style="font-size:11px;color:var(--mt)">${h(ac.who)}</span>
+    </div>
+    ${ac.why?`<div style="font-size:12px;color:var(--mt);margin-top:6px">${h(ac.why)}</div>`:''}
+  </div>`;
+}
+document.getElementById('pain-copies').innerHTML=pains2.map(ac=>renderCopyCard(ac,'r')).join('')||'<p style="color:var(--mt)">데이터 로딩 중</p>';
+document.getElementById('wow-copies').innerHTML=wows2.map(ac=>renderCopyCard(ac,'g')).join('')||'<p style="color:var(--mt)">데이터 로딩 중</p>';
+
+// Unverified hypotheses
+document.getElementById('unverified').innerHTML=(D.hypotheses||[]).map(hy=>`
+  <div class="cd" style="border-left:4px solid var(--a)">
+    <h3>${h(hy.hypothesis)}</h3>
+    <div style="font-size:13px;margin-top:6px">
+      <div><strong style="color:var(--mt)">근거:</strong> ${h(hy.evidence)}</div>
+      <div><strong style="color:var(--mt)">미검증 이유:</strong> ${h(hy.why_unverified)}</div>
+      <div><strong style="color:var(--mt)">검증 방법:</strong> ${h(hy.how_to_verify)}</div>
+    </div>
+  </div>
+`).join('') || '<p style="color:var(--mt)">데이터 로딩 중</p>';
+
+// Next interview questions
+document.getElementById('next-questions').innerHTML=(D.next_questions||[]).map((nq,i)=>`
+  <div class="cd" style="border-left:4px solid var(--g)">
+    <h3>Q${i+1}. ${h(nq.question)}</h3>
+    <div style="font-size:13px;margin-top:6px">
+      <div><strong style="color:var(--mt)">왜 물어봐야 하는지:</strong> ${h(nq.why)}</div>
+      <div><strong style="color:var(--mt)">이런 답이 나오면 검증:</strong> ${h(nq.validation)}</div>
+    </div>
+  </div>
+`).join('') || '<p style="color:var(--mt)">데이터 로딩 중</p>';
 
 // Raw interviews
 let rHtml='';

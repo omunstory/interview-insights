@@ -72,6 +72,8 @@ def parse_common(text):
         "icp": {"title":"","definition":"","followers":"","purpose":"","spend":"","urgency":"","representative":""},
         "usps": [], "matrix": [], "copy_awareness": [], "copy_consideration": [], "copy_decision": [],
         "objections": [], "before_after": [], "segments": [], "price_html": "",
+        "common_voices": [], "high_stress_html": "", "ad_copies": [],
+        "hypotheses": [], "next_questions": [],
     }
 
     # Part 1: ICP
@@ -203,6 +205,94 @@ def parse_common(text):
         raw = re.sub(r'##\s*Part 7.*?\n', '', sec7)
         result["price_html"] = _md2html(raw.strip())
 
+    # Part 8: 공통 발언
+    sec8 = _sec(text, 8)
+    if sec8:
+        # 8-1: 공통 발언 테이블
+        rows = _tbl(sec8)
+        common_voices = {}
+        for r in rows:
+            theme = r.get("공통 주제", "")
+            people = r.get("언급자 (이름)", r.get("언급자", ""))
+            quotes_raw = r.get("각자의 원문", "")
+            if theme:
+                if theme not in common_voices:
+                    common_voices[theme] = []
+                # 원문을 사람별로 분리
+                parts = [q.strip().strip('"').strip('"') for q in re.split(r'[/|·•]', quotes_raw) if q.strip()]
+                names = [n.strip() for n in re.split(r'[,，、]', people) if n.strip()]
+                for i, part in enumerate(parts):
+                    who = names[i] if i < len(names) else people
+                    common_voices[theme].append({"text": part, "who": who})
+        result["common_voices"] = [
+            {"theme": theme, "quotes": quotes}
+            for theme, quotes in common_voices.items()
+        ]
+
+        # 8-2: 고스트레스 공통점
+        stress_match = re.search(r'8-2.*?(?=## Part|$)', sec8, re.DOTALL)
+        if stress_match:
+            raw = re.sub(r'###?\s*8-2.*?\n', '', stress_match.group())
+            result["high_stress_html"] = _md2html(raw.strip())
+
+    # Part 9: 광고 카피 원문
+    sec9 = _sec(text, 9)
+    if sec9:
+        rows = _tbl(sec9)
+        for r in rows:
+            text_val = r.get("고객 원문 (그대로)", r.get("고객 원문", "")).strip('"').strip('"')
+            who = r.get("누가 한 말", "")
+            copy_type = r.get("카피 유형 (페인/와우)", r.get("카피 유형", ""))
+            usage = r.get("추천 용도 (헤드라인/서브카피/CTA/소셜프루프/배너)", r.get("추천 용도", ""))
+            why = r.get("왜 강력한지", "")
+            if text_val:
+                result["ad_copies"].append({
+                    "text": text_val, "who": who, "usage": usage, "why": why,
+                    "copy_type": copy_type,
+                })
+
+    # Part 10: 미검증 가설
+    sec10 = _sec(text, 10)
+    if sec10:
+        # 10-1: 가설 테이블
+        rows = _tbl(sec10)
+        for r in rows:
+            hyp = r.get("가설", "")
+            evidence = r.get("근거 (힌트)", r.get("근거", ""))
+            why_un = r.get("왜 아직 미검증인지", "")
+            how = r.get("검증 방법", "")
+            if hyp:
+                result["hypotheses"].append({
+                    "hypothesis": hyp, "evidence": evidence,
+                    "why_unverified": why_un, "how_to_verify": how,
+                })
+
+        # 10-2: 다음 질문
+        q_pattern = re.findall(
+            r'(?:###?\s*)?(?:Q\d+|질문\s*\d+)[.:]?\s*(.*?)\n(.*?)(?=(?:###?\s*(?:Q\d+|질문)|## Part|$))',
+            sec10, re.DOTALL
+        )
+        for q_title, q_body in q_pattern:
+            why_m = re.search(r'(?:왜|이유)[^:：]*[:：]\s*(.*?)(?:\n|$)', q_body)
+            val_m = re.search(r'(?:검증|답)[^:：]*[:：]\s*(.*?)(?:\n|$)', q_body)
+            result["next_questions"].append({
+                "question": q_title.strip().strip('"'),
+                "why": why_m.group(1).strip() if why_m else "",
+                "validation": val_m.group(1).strip() if val_m else "",
+            })
+
+        # 테이블 형식으로도 시도
+        if not result["next_questions"]:
+            nq_match = re.search(r'10-2.*?(?=## Part|$)', sec10, re.DOTALL)
+            if nq_match:
+                nq_rows = _tbl(nq_match.group())
+                for r in nq_rows:
+                    q = r.get("질문", r.get("질문 원문", ""))
+                    why = r.get("왜 이걸 물어봐야 하는지", r.get("이유", ""))
+                    val = r.get("어떤 답이 나오면 가설이 검증되는지", r.get("검증", ""))
+                    if q:
+                        result["next_questions"].append({"question": q, "why": why, "validation": val})
+
     return result
 
 
@@ -313,6 +403,11 @@ def build_dashboard():
         "before_after": common["before_after"],
         "segments": common["segments"],
         "price_html": common["price_html"] or "<p>가격 데이터 로딩 중</p>",
+        "common_voices": common["common_voices"],
+        "high_stress_html": common["high_stress_html"] or "<p>데이터 분석 중</p>",
+        "ad_copies": common["ad_copies"],
+        "hypotheses": common["hypotheses"],
+        "next_questions": common["next_questions"],
         "databases": databases,
         "raw_pains": raw_pains,
     }
