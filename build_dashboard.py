@@ -271,15 +271,16 @@ def parse_common(text):
         # 섹션 본문만 떼어내서 헤더("질문 3개")가 매칭되지 않도록 함
         sec10_body = re.split(r'###?\s*10-2[^\n]*\n', sec10, maxsplit=1)
         sec10_body = sec10_body[1] if len(sec10_body) > 1 else sec10
+        # "1. **"질문"**", "Q1. ...", "질문 1: ..." 등 다양한 형식 지원
         q_pattern = re.findall(
-            r'(?:^|\n)#{0,4}\s*(?:Q\s*\d+|질문\s*\d+)\s*[.:)]\s*(.*?)\n(.*?)(?=(?:\n#{0,4}\s*(?:Q\s*\d+|질문\s*\d+)\s*[.:)]|\n##\s*Part|\Z))',
+            r'(?:^|\n)\s*(?:#{0,4}\s*)?(?:Q\s*)?\d+\s*[.):]\s*\*{0,2}["“]?\s*(.+?)\s*["”]?\*{0,2}\s*\n(.*?)(?=(?:\n\s*(?:#{0,4}\s*)?(?:Q\s*)?\d+\s*[.):]|\n##\s*Part|\Z))',
             sec10_body, re.DOTALL
         )
         for q_title, q_body in q_pattern:
-            why_m = re.search(r'(?:왜|이유)[^:：]*[:：]\s*(.*?)(?:\n|$)', q_body)
-            val_m = re.search(r'(?:검증|답)[^:：]*[:：]\s*(.*?)(?:\n|$)', q_body)
+            why_m = re.search(r'(?:왜|이유|필요)[^:：\n]*[:：]\s*(.*?)(?:\n|$)', q_body)
+            val_m = re.search(r'(?:검증|기준|답)[^:：\n]*[:：]\s*(.*?)(?:\n|$)', q_body)
             result["next_questions"].append({
-                "question": q_title.strip().strip('"'),
+                "question": q_title.strip().strip('"').strip('"').strip('"'),
                 "why": why_m.group(1).strip() if why_m else "",
                 "validation": val_m.group(1).strip() if val_m else "",
             })
